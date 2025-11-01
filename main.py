@@ -1,6 +1,25 @@
 from cryptography.fernet import Fernet
 
-key = Fernet.generate_key()
+
+def gerar_chave():
+    key = Fernet.generate_key()
+    try:
+        with open("key.key", "wb") as file:
+            file.write(key)
+    except FileNotFoundError:
+        print("Error: O ficheiro não existe.")
+        return None
+
+def carregar_chave():
+    try:
+        with open("key.key", "rb") as file:
+            return file.read()
+    except FileNotFoundError:
+        print("Error: O ficheiro não existe.")
+        return None
+    
+
+key = carregar_chave()
 fer = Fernet(key)
 
 def ver():
@@ -8,7 +27,8 @@ def ver():
         for line in f:
             data = line.rstrip()
             user, passw = data.split(" | ")
-            print(f"Usuário: {user} | Senha: {fer.decrypt(passw.encode()).decode()}")
+            senha = fer.decrypt(passw.encode()).decode()
+            print(f"Usuário: {user} | Senha: {senha}")
 
 def add():
     user = input("Digite o nome/email: ")
